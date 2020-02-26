@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <button id="0" class="btn btn-info">Test API</button>
+    <button id="5000" class="btn btn-info">Test API With Sleep (5 sec)</button>
+    <button id="15000" class="btn btn-info">Test API With Sleep (15 sec)</button>
+    <br />
+    Result: <label id="message" style="color:green"></label><br />
+    Circuit breaker status: <label id="status" style="color:green"></label><br />
+    Last exception: <label id="exception" style="color:green"></label>
+    <script>
+        function disableButtons() {
+            $(".btn").prop('disabled', true);
+        }
+        function enableButtons() {
+            $(".btn").prop('disabled', false);
+        }
+        $(document).ready(function() {
+            $(".btn").on("click",
+                function() {
+                    disableButtons();
+                    $.ajax({
+                        type: "GET",
+                        url: "https://localhost:44357/circuitbreaker?timeout=" + this.id,
+                        contentType: "application/json",
+                        success: function(response) {
+                            console.log(response);
+                            $("#message").text(response.message);
+                            $("#status").text(response.circuitBreakerStatus);
+                            $("#exception").text(response.exceptionMessage);
+                        }
+                    }).done(function() {
+                        enableButtons();
+                    });
+                });
+        });
+    </script>
+</div>
